@@ -1,0 +1,13 @@
+package Switch
+
+init
+	int i = 2
+	switch i
+		case 1
+			print("1")
+		case 3
+			print("3")
+		case 88
+			print("88")
+		default
+			print("not implemented")

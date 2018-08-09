@@ -1,0 +1,7 @@
+package Cascade
+
+init
+	CreateTrigger()
+		..registerAnyUnitEvent(EVENT_PLAYER_UNIT_ISSUED_ORDER)
+		..addCondition(Condition(function cond))
+		..addAction(function action)

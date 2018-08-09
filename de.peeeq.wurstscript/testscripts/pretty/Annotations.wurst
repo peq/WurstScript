@@ -1,0 +1,13 @@
+package Annotations
+
+@configurable constant SOME_VAR = 12
+@config constant SOME_VAR = 24
+
+@compiletime function foo()
+	skip
+
+@test function someTest()
+	skip
+
+@deprecated("Use .size() instead") function getSize() returns int
+	skip

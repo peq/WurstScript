@@ -1,0 +1,17 @@
+package Loops
+
+init
+	while a > b
+		skip
+	for i = 0 to 10
+		skip
+	for i = 0 to 10 step 2
+		skip
+	for i = 10 downto 0
+		skip
+	for u in someGroup
+		skip
+	for u from someGroup
+		skip
+	for i in myList
+		skip

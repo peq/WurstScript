@@ -1,0 +1,51 @@
+package FocusFire
+
+import ChannelAbilityPreset
+import Assets
+import RegisterEvents
+import ClosureForGroups
+import GameplayConstants
+import TowerConstants
+import TimedEffect
+import Movement
+import Regions
+import Tooltip
+
+@compiletime function generateFocusFire()
+	new ChannelAbilityPreset(ID_FOCUS_FIRE, 1, true)
+		..setName("Focus fire")
+		..setHotkeyNormal("Q")
+		..setTooltipNormal(1, tooltipCustomBasic("Q", "Focus fire", ""))
+		..setTooltipNormalExtended(1, tooltipTextFlavor("Orders all your towers to attack a certain unit.", "\"Why do it yourself when someone else can.. Twice as well even.\" - Unknown Peon"))
+		..setIconNormal(Icons.bTNAdvancedCreatureAttack)
+		..presetTargetTypes(Targettype.UNIT)
+		..setTargetsAllowed(1, "enemy")
+		..setCastRange(1, 1000)
+		..setManaCost(1, 0)
+		..setHeroAbility(false)
+		..setButtonPositionNormalX(3)
+		..setButtonPositionNormalY(0)
+
+class AttackTarget implements ForGroupCallback
+	unit target
+	unit caster
+
+	construct(unit caster, unit target)
+		this.caster = caster
+		this.target = target
+
+	function callback(unit u)
+		if u.getOwner() != PLAYER_BROWN and u != this.caster
+			u.issueTargetOrder("attack", this.target)
+
+function focusFire()
+	let target = GetSpellTargetUnit()
+	let caster = GetTriggerUnit()
+	let p = target.getPlayerN()
+	let r = rectFromIndex(playerArea.get(p))
+	AttackTarget at = new AttackTarget(caster, target)
+	forUnitsInRect(r, at)
+	attatchTimedEffect(target, 3., Abilities.talkToMe, "overhead")
+
+init
+	registerSpellEffectEvent(ID_FOCUS_FIRE, function focusFire)

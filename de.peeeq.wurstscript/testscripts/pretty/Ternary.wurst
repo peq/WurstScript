@@ -1,0 +1,3 @@
+package Ternary
+
+public constant string enemyCount = n.toString() + " " + n == 1 ? "enemy" : "enemies"

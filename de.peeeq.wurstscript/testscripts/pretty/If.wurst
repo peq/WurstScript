@@ -1,0 +1,16 @@
+package If
+
+init
+	var i = 0
+	if i == 0
+		i = 1
+	else if 1 == 1
+		i = 2
+	else
+		i = 3
+	if caster.getOwner() == BOT_PLAYER
+		print("caster owned by BOT_PLAYER")
+	if GetSpellAbilityId() == SPELL_ID
+		flashEffect(getSpellTargetPos(), FX_PATH)
+	if x > 0 and x < 100 and y > 0 and y < 100
+		print("inside box")

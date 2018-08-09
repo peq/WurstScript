@@ -1,0 +1,13 @@
+package Closures
+
+init
+	doLater(10.0, () -> begin
+		KillUnit(u)
+		createNiceExplosion()
+		doMoreStuff()
+	end)
+	Predicate<int> pred = (int x) -> x mod 2 == 0
+	let t = getTimer()
+	let x = 3
+	t.setData(x)
+	t.start(3.0, () -> doSomething(GetExpiredTimer().getData()))

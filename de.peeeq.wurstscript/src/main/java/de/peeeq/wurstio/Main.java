@@ -18,6 +18,7 @@ import de.peeeq.wurstio.utils.W3Utils;
 import de.peeeq.wurstscript.*;
 import de.peeeq.wurstscript.ast.WurstModel;
 import de.peeeq.wurstscript.attributes.CompileError;
+import de.peeeq.wurstscript.attributes.prettyPrint.PrettyUtils;
 import de.peeeq.wurstscript.gui.WurstGui;
 import de.peeeq.wurstscript.gui.WurstGuiCliImpl;
 import de.peeeq.wurstscript.intermediatelang.interpreter.ILStackFrame;
@@ -94,6 +95,11 @@ public class Main {
             if (runArgs.isLanguageServer()) {
 //                new LanguageServer().start();
                 LanguageServerStarter.start();
+                return;
+            }
+
+            if (runArgs.isPrettyPrint()) {
+                PrettyUtils.pretty(runArgs.getFiles());
                 return;
             }
 

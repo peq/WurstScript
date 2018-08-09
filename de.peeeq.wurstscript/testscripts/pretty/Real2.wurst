@@ -1,0 +1,52 @@
+package Uren
+
+import Assets
+import Damage
+import UnitObjEditing
+import TowerDefinition
+import TowerConstants
+import BuilderConstants
+import Tooltip
+import ID2S
+
+constant GOLD_COST = 150
+constant RANGE = 500
+constant ATTACK_SPEED = 0.6
+constant DAMAGE_BASE = 41
+constant DAMAGE_SIDES_PER_DIE = 15
+constant POINT_VALUE = GOLD_COST
+
+class Uren extends TowerDefinition
+	construct(int id)
+		super(id)
+		setIconGameInterface(Icons.bTNDruidOfTheClaw)
+		setModelFile(Units.druidoftheClaw)
+		setTintingColorRed(255)
+		setTintingColorGreen(255)
+		setTintingColorBlue(255)
+		setUnitSoundSet("DruidOfTheClaw")
+		setScalingValue(1.)
+		setGroundTexture(ID_FULLMOON_TRIBE_GROUND_TEXTURE)
+		setAcquisitionRange(RANGE.toReal())
+		setAttack1Range(RANGE)
+		setAttack1CooldownTime(ATTACK_SPEED)
+		setAttack1DamageBase(DAMAGE_BASE)
+		setAttack1DamageSidesperDie(DAMAGE_SIDES_PER_DIE)
+		setNormalAbilities(ID2S(ID_SELL_TOWER) + "," + ID2S(ID_TOWER_UREN_TRAP_COOLDOWN))
+		setAttack1ProjectileArt(Abilities.ancientProtectorMissile)
+		setAttack1ProjectileHomingEnabled(true)
+		setAttack1ProjectileSpeed(800)
+		setAttack1WeaponType(WeaponType.Missile)
+		setGoldCost(GOLD_COST)
+		setPointValue(POINT_VALUE)
+		setUpgradesTo("")
+		setUpgradesUsed("")
+		setButtonPositionX(3)
+		setButtonPositionY(0)
+		setHotkey("R")
+		setName("Uren Blacktooth")
+		setTooltipBasic(tooltipBuild("R", "Uren Blacktooth"))
+		setTooltipExtended(tooltipTowerExtended("High damage tower with the ability to place traps.", damageBoundary(DAMAGE_BASE, DAMAGE_SIDES_PER_DIE), ATTACK_SPEED, RANGE, "Trap", "As the apprentice of Lea Stoneclaw herself Uren is fearless hunter that knows every trick there is in the huners arsenal."))
+
+@compiletime function tower()
+	new Uren(ID_TOWER_UREN)

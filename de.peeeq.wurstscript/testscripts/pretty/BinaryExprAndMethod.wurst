@@ -1,0 +1,6 @@
+package BinaryExprAndMethod
+
+init
+	c = "1"
+	int hash
+	hash = ("00" + c).getHash()
