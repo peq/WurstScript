@@ -46,11 +46,11 @@ public class W3Utils {
      */
     public static GameVersion parsePatchVersion(File wc3Path) {
         try {
-            if (Orient.isWindowsSystem()) {
+            if (Orient.isWindowsSystem() || Orient.isLinuxSystem()) {
                 gameExe = WinGameExeFinder.fromDirIgnoreVersion(wc3Path);
                 WLogger.info("Game Executable: " + gameExe);
             } else {
-                WLogger.warning("Game path configuration only works on windows");
+                WLogger.warning("Game path configuration not available");
                 throw new NotFoundException();
             }
         } catch (NotFoundException e) {
@@ -62,7 +62,9 @@ public class W3Utils {
         }
         if (gameExe != null) {
             try {
-                if (Orient.isWindowsSystem()) {
+                if (Orient.isLinuxSystem()) {
+                    W3Utils.version = GameVersion.VERSION_1_32;
+                } else if (Orient.isWindowsSystem()) {
                     W3Utils.version = GameExe.getVersion(gameExe);
                 } else if (Orient.isMacSystem()) {
                     W3Utils.version = new MacGameVersionFinder().get();
