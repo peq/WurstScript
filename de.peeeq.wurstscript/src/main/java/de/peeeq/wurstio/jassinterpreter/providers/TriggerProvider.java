@@ -1,10 +1,7 @@
 package de.peeeq.wurstio.jassinterpreter.providers;
 
 import de.peeeq.wurstio.jassinterpreter.mocks.TriggerMock;
-import de.peeeq.wurstscript.intermediatelang.ILconstBool;
-import de.peeeq.wurstscript.intermediatelang.ILconstFuncRef;
-import de.peeeq.wurstscript.intermediatelang.ILconstString;
-import de.peeeq.wurstscript.intermediatelang.IlConstHandle;
+import de.peeeq.wurstscript.intermediatelang.*;
 import de.peeeq.wurstscript.intermediatelang.interpreter.AbstractInterpreter;
 
 public class TriggerProvider extends Provider {
@@ -42,6 +39,12 @@ public class TriggerProvider extends Provider {
 
     public void TriggerRegisterPlayerChatEvent(IlConstHandle trigger, IlConstHandle whichPlayer, ILconstString chatMessageToDetect, ILconstBool
             exactMatchOnly) {
+        TriggerMock triggerMock = (TriggerMock) trigger.getObj();
+        // TODO
+//        triggerMock.registerEvent();
+    }
+
+    public void TriggerRegisterVariableEvent(IlConstHandle trigger, ILconstString varName, IlConstHandle opcode, ILconstReal limitval) {
         TriggerMock triggerMock = (TriggerMock) trigger.getObj();
         // TODO
 //        triggerMock.registerEvent();

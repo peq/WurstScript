@@ -4,13 +4,16 @@ import de.peeeq.wurstscript.jassIm.ImFunction;
 import de.peeeq.wurstscript.jassIm.ImProg;
 import de.peeeq.wurstscript.jassIm.ImVar;
 import de.peeeq.wurstscript.translation.imtranslation.ImTranslator;
+import de.peeeq.wurstscript.validation.TRVEHelper;
 
 public class ImCompressor {
 
+    private ImTranslator trans;
     private ImProg prog;
     private NameGenerator ng;
 
     public ImCompressor(ImTranslator translator) {
+        this.trans = translator;
         this.prog = translator.getImProg();
         ng = new NameGenerator();
     }
@@ -23,9 +26,9 @@ public class ImCompressor {
 
     public void compressGlobals() {
         for (final ImVar global : prog.getGlobals()) {
-            if (global.getIsBJ()) {
-                // no not rename bj constants
-
+            if (global.getIsBJ() || TRVEHelper.protectedVariables.contains(global.getName())) {
+                // do not rename bj constants
+                // do not rename TRVE vars
                 continue;
             }
 

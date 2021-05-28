@@ -3,6 +3,7 @@ package de.peeeq.wurstscript.translation.lua.translation;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import de.peeeq.wurstscript.jassIm.*;
+import de.peeeq.wurstscript.validation.TRVEHelper;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -82,7 +83,7 @@ public class RemoveGarbage {
         }
 
         prog.getClasses().removeIf(c -> !used.getClasses().contains(c));
-        prog.getGlobals().removeIf(g -> !used.getVars().contains(g));
+        prog.getGlobals().removeIf(g -> !used.getVars().contains(g) && !TRVEHelper.protectedVariables.contains(g.getName()));
         prog.getFunctions().removeIf(f -> !used.getFunctions().contains(f));
         for (ImClass c : prog.getClasses()) {
             c.getFields().removeIf(g -> !used.getVars().contains(g));

@@ -45,6 +45,8 @@ public class WurstValidator {
     private int visitedFunctions;
     private Multimap<WScope, WScope> calledFunctions = HashMultimap.create();
     private @Nullable Element lastElement = null;
+    private HashSet<String> trveWrapperFuncs = new HashSet<>();
+    private HashMap<String, HashSet<FunctionCall>> wrapperCalls = new HashMap<>();
 
     public WurstValidator(WurstModel root) {
         this.prog = root;
@@ -83,6 +85,20 @@ public class WurstValidator {
         ValidateGlobalsUsage.checkGlobalsUsage(toCheck);
         ValidateClassMemberUsage.checkClassMembers(toCheck);
         ValidateLocalUsage.checkLocalsUsage(toCheck);
+
+        trveWrapperFuncs.forEach(wrapper -> {
+            if (wrapperCalls.containsKey(wrapper)) {
+                wrapperCalls.get(wrapper).forEach(call -> {
+                    if (call.getArgs().size() > 1 && call.getArgs().get(1) instanceof ExprStringVal) {
+                        ExprStringVal varName = (ExprStringVal) call.getArgs().get(1);
+                        TRVEHelper.protectedVariables.add(varName.getValS());
+                        WLogger.info("keep: " + varName.getValS());
+                    } else {
+                        call.addError("Map contains TriggerRegisterVariableEvent with non-constant arguments. Can't be optimized.");
+                    }
+                });
+            }
+        });
     }
 
     private void checkUnusedImports(List<CompilationUnit> toCheck) {
@@ -1193,7 +1209,10 @@ public class WurstValidator {
     private void checkCall(StmtCall call) {
         String funcName;
         if (call instanceof FunctionCall) {
-            funcName = ((FunctionCall) call).getFuncName();
+            FunctionCall fcall = (FunctionCall) call;
+            funcName = fcall.getFuncName();
+            HashSet<FunctionCall> fcalls = wrapperCalls.computeIfAbsent(funcName, (String s) -> new HashSet<>());
+            fcalls.add(fcall);
         } else if (call instanceof ExprNewObject) {
             funcName = "constructor";
         } else {
@@ -1961,11 +1980,33 @@ public class WurstValidator {
     }
 
     private void checkBannedFunctions(ExprFunctionCall e) {
-        String[] banned = new String[]{
-                "TriggerRegisterVariableEvent" /* , "ExecuteFunc" */};
-        for (String name : banned) {
-            if (e.getFuncName().equals(name)) {
-                e.addError("The function " + name + " is not allowed in Wurst.");
+        if (e.getFuncName().equals("TriggerRegisterVariableEvent")) {
+            if (e.getArgs().size() > 1) {
+                if (e.getArgs().get(1) instanceof ExprStringVal) {
+                    ExprStringVal varName = (ExprStringVal) e.getArgs().get(1);
+                    TRVEHelper.protectedVariables.add(varName.getValS());
+                    WLogger.info("keep: " + varName.getValS());
+                    return;
+                } else if (e.getArgs().get(1) instanceof ExprVarAccess) {
+                    // Check if this is a two line hook... thanks Bribe
+                    ExprVarAccess varAccess = (ExprVarAccess) e.getArgs().get(1);
+                    @Nullable FunctionImplementation nearestFunc = e.attrNearestFuncDef();
+                    WStatements fbody = nearestFunc.getBody();
+                    if (e.getParent() instanceof StmtReturn && fbody.size() <= 4 && fbody.get(fbody.size() - 2).structuralEquals(e.getParent())) {
+                        WParameters params = nearestFunc.getParameters();
+                        if (params.size() == 4 && ((TypeExprSimple) params.get(0).getTyp()).getTypeName().equals("trigger")
+                            && ((TypeExprSimple) params.get(1).getTyp()).getTypeName().equals("string")
+                            && ((TypeExprSimple) params.get(2).getTyp()).getTypeName().equals("limitop")
+                            && ((TypeExprSimple) params.get(3).getTyp()).getTypeName().equals("real")) {
+                            trveWrapperFuncs.add(nearestFunc.getName());
+                            WLogger.info("found wrapper: " + nearestFunc.getName());
+                            return;
+                        }
+                    }
+                }
+            } else {
+
+                e.addError("Map contains TriggerRegisterVariableEvent with non-constant arguments. Can't be optimized.");
             }
         }
 

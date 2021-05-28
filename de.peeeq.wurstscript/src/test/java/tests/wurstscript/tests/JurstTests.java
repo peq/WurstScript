@@ -1,14 +1,18 @@
 package tests.wurstscript.tests;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import de.peeeq.wurstscript.utils.Utils;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
+
+import static org.testng.AssertJUnit.assertTrue;
 
 public class JurstTests extends WurstScriptTest {
 
@@ -258,6 +262,63 @@ public class JurstTests extends WurstScriptTest {
         String jurstCode = new String(Files.readAllBytes(Paths.get(Utils.getResourceFile("test.jurst"))));
 
         testJurstWithJass(false, true, jassCode, jurstCode);
+    }
+
+    @Test
+    public void testKeepTRVE() throws IOException {
+        String jassCode = Utils.string(
+            "type agent\t\t\t    extends     handle \n" +
+                "type event              extends     agent \n" +
+                "type trigger            extends     agent\n" +
+                "type eventid            extends     handle\n" +
+                "type limitop            extends     eventid\n" +
+                "globals",
+            "real myVar = 0.",
+            "endglobals",
+            "native TriggerRegisterVariableEvent takes trigger whichTrigger, string varName, limitop opcode, real limitval returns event",
+            "function foo takes nothing returns nothing",
+            "	 call TriggerRegisterVariableEvent(null, \"myVar\", null, 0.)",
+            "endfunction");
+
+
+        String jurstCode = Utils.string(
+            "package test",
+            "endpackage");
+
+        testJurstWithJass(false, false, jassCode, jurstCode);
+
+        String output = com.google.common.io.Files.toString(new File("./test-output/JurstJassTest_inlopt.j"), Charsets.UTF_8);
+        assertTrue(output.contains("real myVar"));
+    }
+
+    @Test
+    public void testKeepTRVEHooked() throws IOException {
+        String jassCode = Utils.string(
+            "type agent\t\t\t    extends     handle \n" +
+                "type event              extends     agent \n" +
+                "type trigger            extends     agent\n" +
+                "type eventid            extends     handle\n" +
+                "type limitop            extends     eventid\n" +
+                "globals",
+            "real myVar = 0.",
+            "endglobals",
+            "native TriggerRegisterVariableEvent takes trigger whichTrigger, string varName, limitop opcode, real limitval returns event",
+            "function TriggerRegisterVariableEvent_2 takes trigger whichTrigger, string varName, limitop opcode, real limitval returns event",
+            "	 return TriggerRegisterVariableEvent(whichTrigger, varName, opcode, limitval)",
+            "endfunction",
+            "function foo takes nothing returns nothing",
+            "	 call TriggerRegisterVariableEvent_2(null, \"myVar\", null, 0.)",
+            "endfunction");
+
+
+        String jurstCode = Utils.string(
+            "package test",
+            "endpackage");
+
+        testJurstWithJass(false, false, jassCode, jurstCode);
+
+        String output = com.google.common.io.Files.toString(new File("./test-output/JurstJassTest_inlopt.j"), Charsets.UTF_8);
+        assertTrue(output.contains("real myVar"));
     }
 
     private void testJurstWithJass(boolean executeProg, boolean withStdLib, String jass, String jurst) {

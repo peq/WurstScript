@@ -30,6 +30,7 @@ import de.peeeq.wurstscript.utils.LineOffsets;
 import de.peeeq.wurstscript.utils.NotNullList;
 import de.peeeq.wurstscript.utils.TempDir;
 import de.peeeq.wurstscript.utils.Utils;
+import de.peeeq.wurstscript.validation.TRVEHelper;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.lsp4j.MessageType;
 import org.jetbrains.annotations.NotNull;

@@ -5,6 +5,7 @@ import de.peeeq.wurstscript.ast.CompilationUnit;
 import de.peeeq.wurstscript.ast.WurstModel;
 import de.peeeq.wurstscript.attributes.ErrorHandler;
 import de.peeeq.wurstscript.gui.WurstGui;
+import de.peeeq.wurstscript.validation.TRVEHelper;
 import de.peeeq.wurstscript.validation.WurstValidator;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class WurstChecker {
         if (root.isEmpty()) {
             return;
         }
+        TRVEHelper.protectedVariables.clear();
         gui.sendProgress("Checking Files");
 
         if (errorHandler.getErrorCount() > 0) return;

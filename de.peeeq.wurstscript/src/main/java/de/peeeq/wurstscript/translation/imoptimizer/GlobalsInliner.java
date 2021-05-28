@@ -6,6 +6,7 @@ import de.peeeq.wurstscript.jassIm.*;
 import de.peeeq.wurstscript.translation.imtranslation.ImHelper;
 import de.peeeq.wurstscript.translation.imtranslation.ImTranslator;
 import de.peeeq.wurstscript.utils.Utils;
+import de.peeeq.wurstscript.validation.TRVEHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -30,6 +31,10 @@ public class GlobalsInliner implements OptimizerPass {
             if (v.getType() instanceof ImArrayType
                 || v.getType() instanceof ImArrayTypeMulti) {
                 // cannot optimize arrays yet
+                continue;
+            }
+            if (TRVEHelper.protectedVariables.contains(v.getName())) {
+                // keep TRVE vars
                 continue;
             }
 
